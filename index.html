@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Prishu Image Converter</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+		<style>
+			/* styles.css */
+			body {
+				font-family: 'Poppins', sans-serif;
+				background-color: #e0e5ec;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				padding: 20px;
+				margin: 0;
+			}
+
+			.container,
+			.content-container {
+				background: #e0e5ec;
+				padding: 2rem;
+				border-radius: 20px;
+				box-shadow: 10px 10px 20px #a3b1c6, -10px -10px 20px #ffffff;
+				text-align: center;
+				max-width: 800px;
+				width: 100%;
+				margin-bottom: 20px;
+			}
+
+			h1 {
+				color: #333;
+				margin-bottom: 1.5rem;
+				font-size: 2.5rem;
+				font-weight: 700;
+				text-transform: uppercase;
+			}
+
+			.upload-box {
+				margin-bottom: 1.5rem;
+			}
+
+			.upload-label {
+				display: inline-block;
+				padding: 10px 20px;
+				background: #e0e5ec;
+				border-radius: 10px;
+				box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+				cursor: pointer;
+				color: #333;
+				transition: all 0.3s ease;
+			}
+
+			.upload-label:hover {
+				box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+			}
+
+			input[type="file"] {
+				display: none;
+			}
+
+			#fileName {
+				margin-top: 10px;
+				color: #555;
+				font-size: 0.9rem;
+			}
+
+			.preview {
+				margin-bottom: 1.5rem;
+			}
+
+			#previewImage {
+				max-width: 100%;
+				max-height: 300px;
+				border-radius: 10px;
+				box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+			}
+
+			.options {
+				margin-bottom: 1.5rem;
+			}
+
+			select {
+				padding: 10px;
+				border: none;
+				border-radius: 10px;
+				background: #e0e5ec;
+				box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+				color: #333;
+				cursor: pointer;
+			}
+
+			.resize-options {
+				margin-bottom: 1.5rem;
+			}
+
+			.resize-options input {
+				padding: 10px;
+				border: none;
+				border-radius: 10px;
+				background: #e0e5ec;
+				box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+				color: #333;
+				margin: 5px;
+				width: 100px;
+			}
+
+			.actions {
+				display: flex;
+				justify-content: space-between;
+				gap: 10px;
+				margin-bottom: 1.5rem;
+			}
+
+			button {
+				padding: 10px 20px;
+				border: none;
+				border-radius: 10px;
+				background: #e0e5ec;
+				box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+				color: #333;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				flex: 1;
+			}
+
+			button:hover {
+				box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+			}
+
+			.output {
+				margin-top: 1.5rem;
+			}
+
+			#downloadLink {
+				padding: 10px 20px;
+				background: #e0e5ec;
+				border-radius: 10px;
+				box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+				color: #333;
+				text-decoration: none;
+				display: inline-block;
+				transition: all 0.3s ease;
+			}
+
+			#downloadLink:hover {
+				box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff;
+			}
+
+			/* Content Styling */
+			.content-container {
+				text-align: left;
+				background: #e0e5ec;
+				padding: 2rem;
+				border-radius: 20px;
+				box-shadow: 10px 10px 20px #a3b1c6, -10px -10px 20px #ffffff;
+				margin-top: 20px;
+			}
+
+			.section {
+				margin-bottom: 2.5rem;
+				padding: 1.5rem;
+				background: #e0e5ec;
+				border-radius: 15px;
+				box-shadow: 5px 5px 10px #a3b1c6, -5px -5px 10px #ffffff;
+			}
+
+			.topic {
+				color: #ff0000;
+				/* Red */
+				font-size: 1.8rem;
+				font-weight: 700;
+				margin-bottom: 1rem;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+			}
+
+			.subtopic {
+				color: #00aa00;
+				/* Green */
+				font-size: 1.4rem;
+				font-weight: 600;
+				margin-top: 1rem;
+				margin-bottom: 0.5rem;
+				text-transform: capitalize;
+			}
+
+			.description {
+				color: #0000ff;
+				/* Blue */
+				font-size: 1rem;
+				line-height: 1.6;
+				margin-bottom: 1.5rem;
+			}
+
+			/* Responsive Design */
+			@media (max-width: 600px) {
+
+				.container,
+				.content-container {
+					padding: 1rem;
+				}
+
+				h1 {
+					font-size: 2rem;
+				}
+
+				.resize-options input {
+					width: 80px;
+				}
+
+				.topic {
+					font-size: 1.5rem;
+				}
+
+				.subtopic {
+					font-size: 1.2rem;
+				}
+
+				.description {
+					font-size: 0.9rem;
+				}
+
+				.section {
+					padding: 1rem;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<h1>Prishu Image Converter</h1>
+			<div class="upload-box">
+				<input type="file" id="fileInput" accept="image/*">
+				<label for="fileInput" class="upload-label">Choose an Image</label>
+				<p id="fileName"></p>
+			</div>
+			<div class="preview">
+				<img id="previewImage" src="#" alt="Image Preview" style="display: none;">
+			</div>
+			<div class="options">
+				<label for="formatSelect">Convert To:</label>
+				<select id="formatSelect">
+					<option value="jpeg">JPEG</option>
+					<option value="png">PNG</option>
+					<option value="webp">WEBP</option>
+					<option value="bmp">BMP</option>
+					<option value="gif">GIF</option>
+					<option value="tiff">TIFF</option>
+				</select>
+			</div>
+			<div class="resize-options">
+				<label for="widthInput">Width:</label>
+				<input type="number" id="widthInput" placeholder="Width (px)">
+				<label for="heightInput">Height:</label>
+				<input type="number" id="heightInput" placeholder="Height (px)">
+			</div>
+			<div class="actions">
+				<button id="convertBtn">Convert Image</button>
+				<button id="resetBtn">Convert Another Image</button>
+			</div>
+			<div class="output">
+				<a id="downloadLink" style="display: none;">Download Converted Image</a>
+			</div>
+		</div>
+
+		<!-- Content Section -->
+		<div class="content-container">
+			<div class="section">
+				<h2 class="topic">Why We Chose It</h2>
+				<p class="description">The Image Converter Tool was designed to provide a simple and efficient way to convert images between various formats while preserving quality. It is ideal for users who need quick conversions without installing additional software.</p>
+			</div>
+
+			<div class="section">
+				<h2 class="topic">How It Works</h2>
+				<h3 class="subtopic">Upload Image</h3>
+				<p class="description">Users can upload an image file using the "Choose an Image" button. The selected image is displayed for preview.</p>
+				<h3 class="subtopic">Crop and Resize</h3>
+				<p class="description">The tool allows users to crop and resize the image using the Cropper.js library and input fields for width and height.</p>
+				<h3 class="subtopic">Convert and Download</h3>
+				<p class="description">Users can select the desired output format and download the converted image with a single click.</p>
+			</div>
+
+			<div class="section">
+				<h2 class="topic">How to Use</h2>
+				<h3 class="subtopic">Step 1: Upload an Image</h3>
+				<p class="description">Click the "Choose an Image" button to upload an image file from your device.</p>
+				<h3 class="subtopic">Step 2: Crop and Resize (Optional)</h3>
+				<p class="description">Use the cropping tool and input fields to adjust the image dimensions as needed.</p>
+				<h3 class="subtopic">Step 3: Select Output Format</h3>
+				<p class="description">Choose the desired output format from the dropdown menu.</p>
+				<h3 class="subtopic">Step 4: Convert and Download</h3>
+				<p class="description">Click the "Convert Image" button to process the image and download the converted file.</p>
+			</div>
+
+			<div class="section">
+				<h2 class="topic">FAQs</h2>
+				<h3 class="subtopic">What image formats are supported?</h3>
+				<p class="description">The tool supports JPEG, PNG, WEBP, BMP, GIF, and TIFF formats.</p>
+				<h3 class="subtopic">Can I adjust the quality of the output image?</h3>
+				<p class="description">Yes, for lossy formats like JPEG and WEBP, you can specify the quality level during conversion.</p>
+				<h3 class="subtopic">Is the tool free to use?</h3>
+				<p class="description">Yes, the Image Converter Tool is completely free to use.</p>
+				<h3 class="subtopic">Does the tool work on mobile devices?</h3>
+				<p class="description">Yes, the tool is fully responsive and works on both desktop and mobile devices.</p>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+		<script>
+			// script.js
+			let cropper;
+
+			document.getElementById('fileInput').addEventListener('change', function(event) {
+				const file = event.target.files[0];
+				const fileNameDisplay = document.getElementById('fileName');
+				const previewImage = document.getElementById('previewImage');
+
+				if (file) {
+					fileNameDisplay.textContent = `Selected File: ${file.name}`;
+					const reader = new FileReader();
+					reader.onload = function(e) {
+						previewImage.src = e.target.result;
+						previewImage.style.display = 'block';
+
+						// Initialize Cropper.js
+						if (cropper) {
+							cropper.destroy();
+						}
+						cropper = new Cropper(previewImage, {
+							aspectRatio: NaN, // Free aspect ratio
+							viewMode: 1,
+							autoCropArea: 1,
+						});
+					};
+					reader.readAsDataURL(file);
+				} else {
+					fileNameDisplay.textContent = '';
+					previewImage.style.display = 'none';
+					if (cropper) {
+						cropper.destroy();
+					}
+				}
+			});
+
+			document.getElementById('convertBtn').addEventListener('click', function() {
+				const fileInput = document.getElementById('fileInput');
+				const formatSelect = document.getElementById('formatSelect');
+				const downloadLink = document.getElementById('downloadLink');
+				const widthInput = document.getElementById('widthInput');
+				const heightInput = document.getElementById('heightInput');
+
+				if (fileInput.files.length === 0) {
+					alert('Please select an image first.');
+					return;
+				}
+
+				const file = fileInput.files[0];
+				const reader = new FileReader();
+
+				reader.onload = function(event) {
+					const img = new Image();
+					img.src = event.target.result;
+
+					img.onload = function() {
+						const canvas = document.createElement('canvas');
+						const ctx = canvas.getContext('2d');
+
+						// Get cropped data
+						const croppedCanvas = cropper.getCroppedCanvas({
+							width: widthInput.value || img.width,
+							height: heightInput.value || img.height,
+						});
+
+						canvas.width = croppedCanvas.width;
+						canvas.height = croppedCanvas.height;
+						ctx.drawImage(croppedCanvas, 0, 0);
+
+						// Convert to the selected format
+						const mimeType = `image/${formatSelect.value}`;
+						let quality = 1.0; // Default quality (lossless)
+
+						// Adjust quality for lossy formats (JPEG, WEBP)
+						if (formatSelect.value === 'jpeg' || formatSelect.value === 'webp') {
+							quality = parseFloat(prompt('Enter quality (0.1 to 1.0):', '1.0'));
+							if (isNaN(quality)) quality = 1.0; // Default to 1.0 if invalid input
+							quality = Math.min(Math.max(quality, 0.1), 1.0); // Clamp between 0.1 and 1.0
+						}
+
+						// Convert canvas to data URL with specified quality
+						const dataUrl = canvas.toDataURL(mimeType, quality);
+
+						downloadLink.href = dataUrl;
+						downloadLink.download = `converted_image.${formatSelect.value}`;
+						downloadLink.style.display = 'block';
+					};
+				};
+
+				reader.readAsDataURL(file);
+			});
+
+			// Reset functionality
+			document.getElementById('resetBtn').addEventListener('click', function() {
+				document.getElementById('fileInput').value = '';
+				document.getElementById('fileName').textContent = '';
+				document.getElementById('previewImage').style.display = 'none';
+				document.getElementById('downloadLink').style.display = 'none';
+				document.getElementById('widthInput').value = '';
+				document.getElementById('heightInput').value = '';
+				if (cropper) {
+					cropper.destroy();
+				}
+			});
+		</script>
+	</body>
+
+</html>
